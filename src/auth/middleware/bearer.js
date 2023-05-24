@@ -1,30 +1,24 @@
 'use strict';
 
-const jwt = require('jsonwebtoken');
 const { users } = require('../models/index.js');
 
 module.exports = async (req, res, next) => {
+
   try {
+
     if (!req.headers.authorization) {
-      throw new Error('Invalid Login');
+      next('Invalid Login');
     }
 
     const token = req.headers.authorization.split(' ').pop();
-    const decodedToken = jwt.verify(token, process.env.SECRET); // Replace 'process.env.SECRET' with the environment variable holding your actual secret key used for signing the tokens
-
-    const username = decodedToken.username;
-    const validUser = await users.findOne({ where: { username } });
-
-    if (!validUser) {
-      throw new Error('Invalid Login');
-    }
+    const validUser = await users.authenticateToken(token);
 
     req.user = validUser;
-    req.token = token;
+    req.token = validUser.token;
+    next(); //move on to the next middleware
 
-    next();
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error(error);
     res.status(403).send('Invalid Login');
   }
 };
