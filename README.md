@@ -15,6 +15,9 @@ We will now be using that Token to re-authenticate users to shield access to any
 
 ## Collaborators
 
+Class 401D53
+Ryan Gallaway
+
 ## Setup ///
 
 ## `.env` requirements (where applicable)
